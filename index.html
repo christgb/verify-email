@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Form Example</title>
+  <style>
+    #data-table {
+      border-collapse: collapse;
+    }
+
+    #data-table th,
+    #data-table td {
+      border: 1px solid black;
+      padding: 8px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Form Example</h1>
+  <form action="/submit" method="post">
+    <label for="name">Name:</label>
+    <input type="text" autocomplete="name" id="name" name="name" required>
+    <br>
+    <label for="email">Email:</label>
+    <input type="text" autocomplete="email" id="email" name="email" required>
+    <br>
+    <button type="submit">Submit</button>
+  </form>
+<br/>
+  <table id="data-table"></table>
+
+  <script type="text/javascript">
+    console.log("Starting data pull.");
+    fetch("http://localhost:8081/data").then(async (r) => {
+      const data = await r.json();
+      const storedData = data.storedData;
+      const errorMessages = data.dataMessages;
+
+      const table = document.getElementById("data-table");
+      storedData.forEach(item => {
+        const row = document.createElement("tr");
+
+        Object.values(item).forEach(value => {
+          const cell = document.createElement("td");
+          cell.textContent = value;
+          row.appendChild(cell);
+        });
+
+        if (errorMessages && errorMessages.length > 0) {
+          const errorMessageCell = document.createElement("td");
+          errorMessageCell.textContent = errorMessages;
+          row.appendChild(errorMessageCell);
+        } else if (!errorMessages) {
+          const emptyCell = document.createElement("td");
+          row.appendChild(emptyCell);
+        }
+
+        table.appendChild(row);
+      });
+    });
+  </script>
+</body>
+
+</html>
